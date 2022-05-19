@@ -6,6 +6,9 @@
  *
  * Based on ili9325.c by Noralf Tronnes and
  * .S.U.M.O.T.O.Y. by Max MC Costa (https://github.com/sumotoy/TFT_ILI9163C).
+ *
+ * Colorspace (RGB/BGR) fixed by Gad Hayisraeli
+ *  
  */
 
 #include <linux/module.h>
@@ -163,25 +166,25 @@ static void set_addr_win(struct fbtft_par *par, int xs, int ys,
 static int set_var(struct fbtft_par *par)
 {
 	u8 mactrl_data = 0; /* Avoid compiler warning */
-
 	switch (par->info->var.rotate) {
 	case 0:
-		mactrl_data = 0x08;
+		mactrl_data = 0x00;
 		break;
 	case 180:
-		mactrl_data = 0xC8;
+		mactrl_data = 0xC0;
 		break;
 	case 270:
-		mactrl_data = 0xA8;
+		mactrl_data = 0xA0;
 		break;
 	case 90:
-		mactrl_data = 0x68;
+		mactrl_data = 0x60;
 		break;
 	}
 
-	/* Colorspcae */
+	/* Colorspace */
 	if (par->bgr)
-		mactrl_data |= BIT(2);
+		mactrl_data |= BIT(3);
+	
 	write_reg(par, MIPI_DCS_SET_ADDRESS_MODE, mactrl_data);
 	write_reg(par, MIPI_DCS_WRITE_MEMORY_START);
 	return 0;
